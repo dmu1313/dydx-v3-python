@@ -9,6 +9,7 @@ from dydx3.constants import DEFAULT_GAS_AMOUNT
 from dydx3.constants import DEFAULT_GAS_MULTIPLIER
 from dydx3.constants import DEFAULT_GAS_PRICE
 from dydx3.constants import DEFAULT_GAS_PRICE_ADDITION
+from dydx3.constants import DEFAULT_MAX_PRIORITY_FEE_PER_GAS_GWEI
 from dydx3.constants import MAX_SOLIDITY_UINT
 from dydx3.constants import STARKWARE_PERPETUALS_CONTRACT
 from dydx3.constants import TOKEN_CONTRACTS
@@ -120,13 +121,15 @@ class Eth(object):
         auto_detect_nonce = 'nonce' not in options
         if auto_detect_nonce:
             options['nonce'] = self.get_next_nonce(options['from'])
-        if 'gasPrice' not in options:
+        if 'maxFeePerGas' not in options:
             try:
-                options['gasPrice'] = (
+                options['maxFeePerGas'] = (
                     self.web3.eth.gasPrice + DEFAULT_GAS_PRICE_ADDITION
                 )
             except Exception:
-                options['gasPrice'] = DEFAULT_GAS_PRICE
+                options['maxFeePerGas'] = DEFAULT_GAS_PRICE
+        if 'maxPriorityFeePerGas' not in options:
+            options['maxPriorityFeePerGas'] = self.web3.toWei(DEFAULT_MAX_PRIORITY_FEE_PER_GAS_GWEI, 'gwei')
         if 'value' not in options:
             options['value'] = 0
         gas_multiplier = options.pop('gasMultiplier', DEFAULT_GAS_MULTIPLIER)
